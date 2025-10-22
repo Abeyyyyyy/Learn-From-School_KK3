@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Pendaftaran Anggota</title>
+    <style>
+        :root {
+            --black: #000000;
+            --blue-dark: #5682B1;
+            --blue-light: #739EC9;
+            --cream: #FFE8DB;
+            --success: #28a745;
+            --warning: #ffc107;
+            --error: #dc3545;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--blue-light), var(--blue-dark));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header {
+            background: linear-gradient(to right, var(--blue-dark), var(--blue-light));
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .form-container {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--black);
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--blue-light);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(115, 158, 201, 0.2);
+        }
+        
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 5px;
+        }
+        
+        .radio-option, .checkbox-option {
+            display: flex;
+            align-items: center;
+        }
+        
+        .radio-option input, .checkbox-option input {
+            margin-right: 8px;
+        }
+        
+        .radio-option label, .checkbox-option label {
+            margin-bottom: 0;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        
+        button {
+            background: linear-gradient(to right, var(--blue-dark), var(--blue-light));
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(86, 130, 177, 0.4);
+        }
+        
+        .validation-icon {
+            position: absolute;
+            right: 12px;
+            top: 38px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .validation-icon.warning {
+            color: var(--warning);
+        }
+        
+        .validation-icon.success {
+            color: var(--success);
+        }
+        
+        .validation-icon.warning::before {
+            content: "⚠";
+        }
+        
+        .validation-icon.success::before {
+            content: "✓";
+        }
+        
+        .results-container {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: var(--cream);
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .results-container h2 {
+            color: var(--blue-dark);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .results-table th {
+            background-color: var(--blue-light);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            width: 30%;
+        }
+        
+        .results-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .results-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        @media (max-width: 600px) {
+            .radio-group, .checkbox-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Form Pendaftaran Anggota</h1>
+            <p>Isi data diri Anda dengan lengkap dan benar</p>
+        </div>
+        
+        <div class="form-container">
+            <form id="registrationForm" action="validasi.php" method="POST">
+                <div class="form-group">
+                    <label for="nama">Nama Lengkap:</label>
+                    <input type="text" id="nama" name="nama" placeholder="Masukkan nama lengkap" required>
+                    <div class="validation-icon warning" id="namaIcon"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" placeholder="contoh@email.com" required>
+                    <div class="validation-icon warning" id="emailIcon"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Jenis Kelamin:</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="laki" name="jenis_kelamin" value="Laki-laki" required>
+                            <label for="laki">Laki-laki</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="perempuan" name="jenis_kelamin" value="Perempuan">
+                            <label for="perempuan">Perempuan</label>
+                        </div>
+                    </div>
+                    <div class="validation-icon warning" id="jenisKelaminIcon"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Hobi:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="membaca" name="hobi[]" value="Membaca">
+                            <label for="membaca">Membaca</label>
+                        </div>
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="olahraga" name="hobi[]" value="Olahraga">
+                            <label for="olahraga">Olahraga</label>
+                        </div>
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="musik" name="hobi[]" value="Musik">
+                            <label for="musik">Musik</label>
+                        </div>
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="menulis" name="hobi[]" value="Menulis">
+                            <label for="menulis">Menulis</label>
+                        </div>
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="gaming" name="hobi[]" value="Gaming">
+                            <label for="gaming">Gaming</label>
+                        </div>
+                    </div>
+                    <div class="validation-icon warning" id="hobiIcon"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="jurusan">Jurusan:</label>
+                    <select id="jurusan" name="jurusan" required>
+                        <option value="">Pilih Jurusan</option>
+                        <option value="RPL">RPL (Rekayasa Perangkat Lunak)</option>
+                        <option value="TKJ">TKJ (Teknik Komputer dan Jaringan)</option>
+                        <option value="DKV">DKV (Desain Komunikasi Visual)</option>
+                        <option value="MM">MM (Multimedia)</option>
+                    </select>
+                    <div class="validation-icon warning" id="jurusanIcon"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="alamat">Alamat:</label>
+                    <textarea id="alamat" name="alamat" rows="4" placeholder="Masukkan alamat lengkap" required></textarea>
+                    <div class="validation-icon warning" id="alamatIcon"></div>
+                </div>
+                
+                <button type="submit">Kirim Data</button>
+            </form>
+            
+            <!-- Preview hasil input (akan ditampilkan dengan JavaScript) -->
+            <div class="results-container" id="resultsContainer">
+                <h2>Preview Data Pendaftaran</h2>
+                <table class="results-table" id="resultsTable">
+                    <!-- Hasil akan diisi oleh JavaScript -->
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('registrationForm');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const resultsTable = document.getElementById('resultsTable');
+            
+            // Fungsi untuk memperbarui ikon validasi
+            function updateValidationIcons() {
+                // Validasi nama
+                const nama = document.getElementById('nama').value.trim();
+                const namaIcon = document.getElementById('namaIcon');
+                if (nama === '') {
+                    namaIcon.className = 'validation-icon warning';
+                } else {
+                    namaIcon.className = 'validation-icon success';
+                }
+                
+                // Validasi email
+                const email = document.getElementById('email').value.trim();
+                const emailIcon = document.getElementById('emailIcon');
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (email === '') {
+                    emailIcon.className = 'validation-icon warning';
+                } else if (!emailPattern.test(email)) {
+                    emailIcon.className = 'validation-icon warning';
+                } else {
+                    emailIcon.className = 'validation-icon success';
+                }
+                
+                // Validasi jenis kelamin
+                const jenisKelamin = document.querySelector('input[name="jenis_kelamin"]:checked');
+                const jenisKelaminIcon = document.getElementById('jenisKelaminIcon');
+                if (!jenisKelamin) {
+                    jenisKelaminIcon.className = 'validation-icon warning';
+                } else {
+                    jenisKelaminIcon.className = 'validation-icon success';
+                }
+                
+                // Validasi hobi
+                const hobiCheckboxes = document.querySelectorAll('input[name="hobi[]"]:checked');
+                const hobiIcon = document.getElementById('hobiIcon');
+                if (hobiCheckboxes.length === 0) {
+                    hobiIcon.className = 'validation-icon warning';
+                } else {
+                    hobiIcon.className = 'validation-icon success';
+                }
+                
+                // Validasi jurusan
+                const jurusan = document.getElementById('jurusan').value;
+                const jurusanIcon = document.getElementById('jurusanIcon');
+                if (jurusan === '') {
+                    jurusanIcon.className = 'validation-icon warning';
+                } else {
+                    jurusanIcon.className = 'validation-icon success';
+                }
+                
+                // Validasi alamat
+                const alamat = document.getElementById('alamat').value.trim();
+                const alamatIcon = document.getElementById('alamatIcon');
+                if (alamat === '') {
+                    alamatIcon.className = 'validation-icon warning';
+                } else {
+                    alamatIcon.className = 'validation-icon success';
+                }
+            }
+            
+            // Fungsi untuk menampilkan preview data
+            function updatePreview() {
+                // Ambil nilai dari form
+                const nama = document.getElementById('nama').value;
+                const email = document.getElementById('email').value;
+                const jenisKelamin = document.querySelector('input[name="jenis_kelamin"]:checked');
+                const hobiCheckboxes = document.querySelectorAll('input[name="hobi[]"]:checked');
+                const jurusan = document.getElementById('jurusan').value;
+                const alamat = document.getElementById('alamat').value;
+                
+                // Jika ada data yang diisi, tampilkan preview
+                if (nama || email || jenisKelamin || hobiCheckboxes.length > 0 || jurusan || alamat) {
+                    resultsContainer.style.display = 'block';
+                    
+                    // Buat array hobi
+                    const hobi = Array.from(hobiCheckboxes).map(cb => cb.value);
+                    
+                    // Update tabel preview
+                    resultsTable.innerHTML = `
+                        <tr>
+                            <th>Nama Lengkap</th>
+                            <td>${nama || '-'}</td>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <td>${email || '-'}</td>
+                        </tr>
+                        <tr>
+                            <th>Jenis Kelamin</th>
+                            <td>${jenisKelamin ? jenisKelamin.value : '-'}</td>
+                        </tr>
+                        <tr>
+                            <th>Hobi</th>
+                            <td>${hobi.length > 0 ? hobi.join(', ') : '-'}</td>
+                        </tr>
+                        <tr>
+                            <th>Jurusan</th>
+                            <td>${jurusan || '-'}</td>
+                        </tr>
+                        <tr>
+                            <th>Alamat</th>
+                            <td>${alamat || '-'}</td>
+                        </tr>
+                    `;
+                } else {
+                    resultsContainer.style.display = 'none';
+                }
+            }
+            
+            // Event listener untuk update preview dan ikon validasi saat form berubah
+            const formInputs = form.querySelectorAll('input, select, textarea');
+            formInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    updatePreview();
+                    updateValidationIcons();
+                });
+                input.addEventListener('change', function() {
+                    updatePreview();
+                    updateValidationIcons();
+                });
+            });
+            
+            // Inisialisasi ikon validasi saat halaman dimuat
+            updateValidationIcons();
+            
+            // Validasi form saat submit
+            form.addEventListener('submit', function(e) {
+                let valid = true;
+                
+                // Validasi nama
+                const nama = document.getElementById('nama').value.trim();
+                if (nama === '') {
+                    valid = false;
+                }
+                
+                // Validasi email
+                const email = document.getElementById('email').value.trim();
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (email === '' || !emailPattern.test(email)) {
+                    valid = false;
+                }
+                
+                // Validasi jenis kelamin
+                const jenisKelamin = document.querySelector('input[name="jenis_kelamin"]:checked');
+                if (!jenisKelamin) {
+                    valid = false;
+                }
+                
+                // Validasi hobi
+                const hobi = document.querySelectorAll('input[name="hobi[]"]:checked');
+                if (hobi.length === 0) {
+                    valid = false;
+                }
+                
+                // Validasi jurusan
+                const jurusan = document.getElementById('jurusan').value;
+                if (jurusan === '') {
+                    valid = false;
+                }
+                
+                // Validasi alamat
+                const alamat = document.getElementById('alamat').value.trim();
+                if (alamat === '') {
+                    valid = false;
+                }
+                
+                if (!valid) {
+                    e.preventDefault();
+                    alert('Harap lengkapi semua data dengan benar sebelum mengirim formulir.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
